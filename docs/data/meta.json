@@ -1,0 +1,39 @@
+{
+ "genere_le": "2026-10-10",
+ "territoire": "Communauté de communes de Sélestat",
+ "siren": "246700967",
+ "couches": {
+  "epci": {
+   "objets": 1,
+   "taille_mo": 0.01
+  },
+  "communes": {
+   "objets": 12,
+   "taille_mo": 0.06
+  },
+  "zonage": {
+   "objets": 471,
+   "taille_mo": 0.61
+  },
+  "prescriptions": {
+   "objets": 906,
+   "taille_mo": 0.74
+  },
+  "informations": {
+   "objets": 179,
+   "taille_mo": 0.33
+  },
+  "servitudes": {
+   "objets": 97,
+   "taille_mo": 1.63
+  },
+  "nature": {
+   "objets": 20,
+   "taille_mo": 0.52
+  },
+  "arbres": {
+   "objets": 624,
+   "taille_mo": 0.24
+  }
+ }
+}

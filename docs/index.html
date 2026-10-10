@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIG intercommunal · CC de Sélestat</title>
+<meta name="description" content="Visualiseur cartographique open source : référentiels, urbanisme, servitudes, patrimoine naturel et inventaire du patrimoine arboré des 12 communes de la communauté de communes de Sélestat, avec une fiche de renseignements par parcelle.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="entete">
+  <div class="entete-titre">
+    <h1>SIG intercommunal · CC de Sélestat</h1>
+    <p>Visualiseur open source · 12 communes · référentiels, urbanisme, servitudes, patrimoine arboré</p>
+  </div>
+  <form class="recherche" id="recherche" role="search" autocomplete="off">
+    <label for="q" class="sr">Rechercher une adresse ou une parcelle</label>
+    <input id="q" type="search" placeholder="Adresse, ou parcelle : 67462 AB 123">
+    <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+  </form>
+  <a class="entete-lien" href="https://github.com/jauresmas/sig-selestat-territoires">Code et données</a>
+</header>
+
+<main class="appli">
+  <aside class="panneau" aria-label="Panneau latéral">
+    <nav class="onglets" role="tablist">
+      <button role="tab" aria-selected="true" data-onglet="couches">Couches</button>
+      <button role="tab" aria-selected="false" data-onglet="parcelle">Fiche parcelle</button>
+      <button role="tab" aria-selected="false" data-onglet="communes">Communes</button>
+      <button role="tab" aria-selected="false" data-onglet="donnees">Données</button>
+    </nav>
+
+    <section class="contenu" id="onglet-couches" role="tabpanel">
+      <h2>Fond de plan</h2>
+      <div class="fonds" id="fonds"></div>
+      <h2>Couches</h2>
+      <div id="liste-couches"></div>
+      <p class="note">Le cadastre s'affiche à partir du 1:10 000. Cliquez sur une parcelle pour
+        obtenir sa fiche de renseignements, ou sur un arbre pour sa fiche d'inventaire.</p>
+    </section>
+
+    <section class="contenu" id="onglet-parcelle" role="tabpanel" hidden>
+      <div id="fiche">
+        <div class="vide">
+          <h2>Fiche de renseignements</h2>
+          <p>Zoomez sur la carte puis cliquez sur une parcelle, ou recherchez une référence
+            cadastrale (par exemple <button class="lien" data-exemple="67462 03 174">67462 03 174</button>).</p>
+          <p class="note">La fiche croise la parcelle (API Carto de l'IGN) avec le zonage du PLU,
+            les prescriptions, les informations, les servitudes et les zonages naturels de la base
+            intercommunale. Équivalent ouvert d'une fiche Cart@DS ou Arcopole.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="contenu" id="onglet-communes" role="tabpanel" hidden>
+      <h2>Indicateur cartographié</h2>
+      <select id="indicateur" aria-label="Indicateur cartographié"></select>
+      <div id="legende-indicateur" class="legende-indic"></div>
+      <h2>Communes</h2>
+      <div id="table-communes"></div>
+    </section>
+
+    <section class="contenu" id="onglet-donnees" role="tabpanel" hidden>
+      <h2>Catalogue des données</h2>
+      <p class="note">Chaque jeu de données dispose d'une fiche de métadonnées ISO 19139
+        (profil INSPIRE). Le niveau de diffusion indique ce qui peut sortir de la collectivité.</p>
+      <div class="filtres" id="filtres-diffusion"></div>
+      <div id="catalogue"></div>
+    </section>
+  </aside>
+
+  <div id="carte" role="region" aria-label="Carte interactive"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

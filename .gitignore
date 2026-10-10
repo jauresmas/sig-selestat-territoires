@@ -1,0 +1,20 @@
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+
+# Données sources, base de travail et instance PostgreSQL de démonstration
+# (reconstruites par scripts/run_all.py)
+/data/
+
+# Fichiers temporaires
+*.part
+*.aux.xml
+*.qgz~
+*.qgs~
+.DS_Store
+Thumbs.db
+*.log
+
+# Configuration locale
+.claude/

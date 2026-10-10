@@ -1,0 +1,17 @@
+geopandas==1.1.2
+pandas==2.1.4
+numpy==1.26.4
+shapely==2.0.2
+pyogrio==0.10.0
+requests==2.31.0
+SQLAlchemy==2.0.49
+GeoAlchemy2==0.20.0
+psycopg2-binary==2.9.9
+openpyxl==3.1.5
+reportlab==5.0.1
+matplotlib==3.8.2
+pillow==12.3.0
+Jinja2==3.1.4
+PyMuPDF==1.28.2
+playwright==1.58.0
+lxml==6.1.2
