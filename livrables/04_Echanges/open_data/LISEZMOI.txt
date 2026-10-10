@@ -1,0 +1,9 @@
+Jeux de données ouverts - Communauté de communes de Sélestat (démonstration)
+
+arbres_ccst.geojson : inventaire public du patrimoine arboré (WGS84).
+  Positions issues d'OpenStreetMap : © contributeurs OpenStreetMap, licence ODbL 1.0.
+  La base dérivée reste sous ODbL (partage à l'identique).
+  Les attributs d'état et de dimensions sont simulés (jeu de démonstration).
+
+indicateurs_communes.csv : indicateurs SIG par commune, Licence Ouverte 2.0.
+  Sources : IGN, Base Adresse Nationale, Géoportail de l'Urbanisme, INPN.
