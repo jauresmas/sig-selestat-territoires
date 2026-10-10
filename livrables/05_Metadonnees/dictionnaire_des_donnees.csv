@@ -1,0 +1,265 @@
+﻿table_nom;ordre;champ;type;obligatoire;description
+environnement.zonage_naturel;1;type_zonage;text;False;Type de zonage (SIC, ZPS, ZNIEFF1, ZNIEFF2, RNR, APB)
+environnement.zonage_naturel;2;libelle_type;text;False;
+environnement.zonage_naturel;3;code_mnhn;text;False;
+environnement.zonage_naturel;4;nom;text;False;Nom
+environnement.zonage_naturel;5;gestionnaire;text;False;
+environnement.zonage_naturel;6;url_inpn;text;False;
+environnement.zonage_naturel;7;surface_ha_territoire;double precision;False;
+environnement.zonage_naturel;8;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+environnement.zonage_naturel;9;gid;integer;True;Identifiant technique
+espaces_verts.arbre;1;id;uuid;True;
+espaces_verts.arbre;2;numero;text;False;Identifiant lisible attribué automatiquement : ARB-<code INSEE>-<numéro>
+espaces_verts.arbre;3;code_insee;text;False;Commune, déduite de la position par la base (ne pas saisir)
+espaces_verts.arbre;4;essence;text;True;
+espaces_verts.arbre;5;implantation;text;False;
+espaces_verts.arbre;6;stade_dev;text;False;
+espaces_verts.arbre;7;hauteur_m;numeric;False;
+espaces_verts.arbre;8;circonference_cm;integer;False;Circonférence du tronc mesurée à 1,30 m du sol
+espaces_verts.arbre;9;annee_plantation;integer;False;
+espaces_verts.arbre;10;etat_sanitaire;text;False;
+espaces_verts.arbre;11;risque;text;False;
+espaces_verts.arbre;12;remarquable;boolean;True;
+espaces_verts.arbre;13;date_diagnostic;date;False;Date du dernier diagnostic sanitaire, mise à jour par les interventions de type diagnostic
+espaces_verts.arbre;14;statut;text;True;
+espaces_verts.arbre;15;observations;text;False;
+espaces_verts.arbre;16;photo;text;False;
+espaces_verts.arbre;17;precision_m;numeric;False;Précision horizontale du positionnement GNSS (m), renseignée automatiquement par QField
+espaces_verts.arbre;18;source_geom;text;True;Origine de la position : saisie, osm (OpenStreetMap, ODbL), gps
+espaces_verts.arbre;19;source_attributs;text;True;Origine des attributs : saisie, osm, simulation (jeu de démonstration)
+espaces_verts.arbre;20;osm_id;bigint;False;
+espaces_verts.arbre;21;date_creation;timestamp with time zone;True;
+espaces_verts.arbre;22;auteur_creation;text;True;
+espaces_verts.arbre;23;date_maj;timestamp with time zone;False;
+espaces_verts.arbre;24;auteur_maj;text;False;
+espaces_verts.arbre;25;geom;geometry;True;
+espaces_verts.intervention;1;id;uuid;True;
+espaces_verts.intervention;2;arbre_id;uuid;True;
+espaces_verts.intervention;3;type_intervention;text;True;
+espaces_verts.intervention;4;date_intervention;date;True;
+espaces_verts.intervention;5;intervenant;text;True;
+espaces_verts.intervention;6;cout_ht;numeric;False;
+espaces_verts.intervention;7;etat_constate;text;False;
+espaces_verts.intervention;8;commentaire;text;False;
+espaces_verts.intervention;9;date_creation;timestamp with time zone;True;
+espaces_verts.intervention;10;auteur_creation;text;True;
+ref_admin.commune;1;code_insee;text;True;Code officiel géographique de la commune (INSEE)
+ref_admin.commune;2;nom;text;False;Nom
+ref_admin.commune;3;statut;text;False;
+ref_admin.commune;4;population;bigint;False;Population municipale légale (INSEE)
+ref_admin.commune;5;code_postal;text;False;
+ref_admin.commune;6;siren_commune;text;False;
+ref_admin.commune;7;superficie_cadastrale;bigint;False;
+ref_admin.commune;8;surface_ha;double precision;False;Surface calculée (ha, Lambert-93)
+ref_admin.commune;9;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_admin.epci;1;siren;text;True;
+ref_admin.epci;2;nom;text;False;Nom
+ref_admin.epci;3;nb_communes;bigint;False;
+ref_admin.epci;4;population;bigint;False;Population municipale légale (INSEE)
+ref_admin.epci;5;surface_ha;double precision;False;Surface calculée (ha, Lambert-93)
+ref_admin.epci;6;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_adresse.adresse;1;cle_interop;text;True;Clé d'interopérabilité de l'adresse (BAN)
+ref_adresse.adresse;2;id_fantoir;text;False;
+ref_adresse.adresse;3;numero;bigint;False;Numéro (parcelle ou adresse)
+ref_adresse.adresse;4;rep;text;False;Indice de répétition (bis, ter...)
+ref_adresse.adresse;5;nom_voie;text;False;Nom de la voie
+ref_adresse.adresse;6;nom_ld;text;False;
+ref_adresse.adresse;7;code_postal;text;False;
+ref_adresse.adresse;8;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+ref_adresse.adresse;9;nom_commune;text;False;
+ref_adresse.adresse;10;type_position;text;False;
+ref_adresse.adresse;11;source_position;text;False;
+ref_adresse.adresse;12;source_nom_voie;text;False;
+ref_adresse.adresse;13;certification_commune;boolean;False;Adresse certifiée par la commune dans sa Base Adresse Locale
+ref_adresse.adresse;14;cad_parcelles;text;False;Parcelles cadastrales de rattachement (identifiants séparés par |)
+ref_adresse.adresse;15;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_cadastre.parcelle;1;idu;text;True;Identifiant unique de la parcelle (département + commune + préfixe + section + numéro)
+ref_cadastre.parcelle;2;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+ref_cadastre.parcelle;3;commune;text;False;
+ref_cadastre.parcelle;4;section;text;False;Section cadastrale
+ref_cadastre.parcelle;5;numero;text;False;Numéro (parcelle ou adresse)
+ref_cadastre.parcelle;6;feuille;bigint;False;
+ref_cadastre.parcelle;7;com_abs;text;False;
+ref_cadastre.parcelle;8;contenance;bigint;False;Contenance cadastrale (m²), surface fiscale indicative
+ref_cadastre.parcelle;9;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.batiment;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.batiment;2;nature;text;False;
+ref_topo.batiment;3;usage_1;text;False;Usage principal du bâtiment
+ref_topo.batiment;4;usage_2;text;False;
+ref_topo.batiment;5;construction_legere;boolean;False;
+ref_topo.batiment;6;nombre_de_logements;double precision;False;Nombre de logements
+ref_topo.batiment;7;nombre_d_etages;double precision;False;
+ref_topo.batiment;8;hauteur;double precision;False;Hauteur du bâtiment (m)
+ref_topo.batiment;9;date_d_apparition;text;False;
+ref_topo.batiment;10;origine_du_batiment;text;False;
+ref_topo.batiment;11;identifiants_rnb;text;False;Identifiant du Référentiel national des bâtiments
+ref_topo.batiment;12;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.cimetiere;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.cimetiere;2;nature;text;False;
+ref_topo.cimetiere;3;toponyme;text;False;
+ref_topo.cimetiere;4;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.equipement;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.equipement;2;categorie;text;False;
+ref_topo.equipement;3;nature;text;False;
+ref_topo.equipement;4;nature_detaillee;text;False;
+ref_topo.equipement;5;toponyme;text;False;
+ref_topo.equipement;6;insee_commune;text;False;
+ref_topo.equipement;7;fictif;boolean;False;
+ref_topo.equipement;8;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.surface_hydro;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.surface_hydro;2;nature;text;False;
+ref_topo.surface_hydro;3;cpx_toponyme_de_plan_d_eau;text;False;
+ref_topo.surface_hydro;4;persistance;text;False;
+ref_topo.surface_hydro;5;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.terrain_sport;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.terrain_sport;2;nature;text;False;
+ref_topo.terrain_sport;3;nature_detaillee;text;False;
+ref_topo.terrain_sport;4;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.troncon_hydro;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.troncon_hydro;2;nature;text;False;
+ref_topo.troncon_hydro;3;cpx_toponyme_de_cours_d_eau;text;False;
+ref_topo.troncon_hydro;4;persistance;text;False;
+ref_topo.troncon_hydro;5;position_par_rapport_au_sol;text;False;
+ref_topo.troncon_hydro;6;fictif;boolean;False;
+ref_topo.troncon_hydro;7;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+ref_topo.troncon_route;1;cleabs;text;True;Identifiant de l'objet dans la BD TOPO
+ref_topo.troncon_route;2;nature;text;False;
+ref_topo.troncon_route;3;importance;text;False;
+ref_topo.troncon_route;4;nom_collaboratif_gauche;text;False;
+ref_topo.troncon_route;5;nom_collaboratif_droite;text;False;
+ref_topo.troncon_route;6;cpx_numero;text;False;
+ref_topo.troncon_route;7;nombre_de_voies;double precision;False;
+ref_topo.troncon_route;8;largeur_de_chaussee;double precision;False;
+ref_topo.troncon_route;9;sens_de_circulation;text;False;
+ref_topo.troncon_route;10;urbain;boolean;False;
+ref_topo.troncon_route;11;acces_vehicule_leger;text;False;
+ref_topo.troncon_route;12;prive;boolean;False;
+ref_topo.troncon_route;13;itineraire_vert;boolean;False;
+ref_topo.troncon_route;14;position_par_rapport_au_sol;text;False;
+ref_topo.troncon_route;15;fictif;boolean;False;
+ref_topo.troncon_route;16;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+servitudes.sup_assiette_s;1;suptype;text;False;Catégorie de servitude d'utilité publique (AC1, PM1...)
+servitudes.sup_assiette_s;2;partition;text;False;
+servitudes.sup_assiette_s;3;idgen;text;False;
+servitudes.sup_assiette_s;4;nomsuplitt;text;False;
+servitudes.sup_assiette_s;5;fichier;text;False;
+servitudes.sup_assiette_s;6;gpu_doc_id;text;False;
+servitudes.sup_assiette_s;7;idass;text;False;
+servitudes.sup_assiette_s;8;nomass;text;False;
+servitudes.sup_assiette_s;9;typeass;text;False;
+servitudes.sup_assiette_s;10;modegeoass;text;False;
+servitudes.sup_assiette_s;11;paramcalc;double precision;False;
+servitudes.sup_assiette_s;12;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+servitudes.sup_assiette_s;13;gid;integer;True;Identifiant technique
+servitudes.sup_generateur_l;1;suptype;text;False;Catégorie de servitude d'utilité publique (AC1, PM1...)
+servitudes.sup_generateur_l;2;partition;text;False;
+servitudes.sup_generateur_l;3;idgen;text;False;
+servitudes.sup_generateur_l;4;nomsuplitt;text;False;
+servitudes.sup_generateur_l;5;fichier;text;False;
+servitudes.sup_generateur_l;6;gpu_doc_id;text;False;
+servitudes.sup_generateur_l;7;nomgen;text;False;
+servitudes.sup_generateur_l;8;typegen;text;False;
+servitudes.sup_generateur_l;9;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+servitudes.sup_generateur_l;10;gid;integer;True;Identifiant technique
+servitudes.sup_generateur_p;1;suptype;text;False;Catégorie de servitude d'utilité publique (AC1, PM1...)
+servitudes.sup_generateur_p;2;partition;text;False;
+servitudes.sup_generateur_p;3;idgen;text;False;
+servitudes.sup_generateur_p;4;nomsuplitt;text;False;
+servitudes.sup_generateur_p;5;fichier;text;False;
+servitudes.sup_generateur_p;6;gpu_doc_id;text;False;
+servitudes.sup_generateur_p;7;nomgen;text;False;
+servitudes.sup_generateur_p;8;typegen;text;False;
+servitudes.sup_generateur_p;9;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+servitudes.sup_generateur_p;10;gid;integer;True;Identifiant technique
+servitudes.sup_generateur_s;1;suptype;text;False;Catégorie de servitude d'utilité publique (AC1, PM1...)
+servitudes.sup_generateur_s;2;partition;text;False;
+servitudes.sup_generateur_s;3;idgen;text;False;
+servitudes.sup_generateur_s;4;nomsuplitt;text;False;
+servitudes.sup_generateur_s;5;fichier;text;False;
+servitudes.sup_generateur_s;6;gpu_doc_id;text;False;
+servitudes.sup_generateur_s;7;nomgen;text;False;
+servitudes.sup_generateur_s;8;typegen;text;False;
+servitudes.sup_generateur_s;9;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+servitudes.sup_generateur_s;10;gid;integer;True;Identifiant technique
+urbanisme.doc_urba;1;code_insee;text;True;Code officiel géographique de la commune (INSEE)
+urbanisme.doc_urba;2;partition;text;False;
+urbanisme.doc_urba;3;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.doc_urba;4;typedoc;text;False;
+urbanisme.doc_urba;5;etat;text;False;
+urbanisme.doc_urba;6;datappro;text;False;
+urbanisme.doc_urba;7;nomproc;text;False;
+urbanisme.doc_urba;8;nomreg;text;False;
+urbanisme.doc_urba;9;gpu_doc_id;text;False;
+urbanisme.doc_urba;10;gpu_timestamp;text;False;
+urbanisme.doc_urba;11;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.doc_urba;12;url_gpu;text;False;
+urbanisme.info_surf;1;partition;text;False;
+urbanisme.info_surf;2;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.info_surf;3;libelle;text;False;Libellé court
+urbanisme.info_surf;4;txt;text;False;
+urbanisme.info_surf;5;typeinf;text;False;Type d'information (nomenclature CNIG)
+urbanisme.info_surf;6;stypeinf;text;False;
+urbanisme.info_surf;7;nomfic;text;False;
+urbanisme.info_surf;8;urlfic;text;False;
+urbanisme.info_surf;9;datvalid;text;False;
+urbanisme.info_surf;10;gpu_doc_id;text;False;
+urbanisme.info_surf;11;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+urbanisme.info_surf;12;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.info_surf;13;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+urbanisme.info_surf;14;gid;integer;True;Identifiant technique
+urbanisme.prescription_lin;1;partition;text;False;
+urbanisme.prescription_lin;2;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.prescription_lin;3;libelle;text;False;Libellé court
+urbanisme.prescription_lin;4;txt;text;False;
+urbanisme.prescription_lin;5;typepsc;text;False;Type de prescription (nomenclature CNIG)
+urbanisme.prescription_lin;6;stypepsc;text;False;
+urbanisme.prescription_lin;7;nomfic;text;False;
+urbanisme.prescription_lin;8;urlfic;text;False;
+urbanisme.prescription_lin;9;datvalid;text;False;
+urbanisme.prescription_lin;10;gpu_doc_id;text;False;
+urbanisme.prescription_lin;11;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+urbanisme.prescription_lin;12;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.prescription_lin;13;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+urbanisme.prescription_lin;14;gid;integer;True;Identifiant technique
+urbanisme.prescription_pct;1;partition;text;False;
+urbanisme.prescription_pct;2;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.prescription_pct;3;libelle;text;False;Libellé court
+urbanisme.prescription_pct;4;txt;text;False;
+urbanisme.prescription_pct;5;typepsc;text;False;Type de prescription (nomenclature CNIG)
+urbanisme.prescription_pct;6;stypepsc;text;False;
+urbanisme.prescription_pct;7;nomfic;text;False;
+urbanisme.prescription_pct;8;urlfic;text;False;
+urbanisme.prescription_pct;9;datvalid;text;False;
+urbanisme.prescription_pct;10;gpu_doc_id;text;False;
+urbanisme.prescription_pct;11;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+urbanisme.prescription_pct;12;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.prescription_pct;13;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+urbanisme.prescription_pct;14;gid;integer;True;Identifiant technique
+urbanisme.prescription_surf;1;partition;text;False;
+urbanisme.prescription_surf;2;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.prescription_surf;3;libelle;text;False;Libellé court
+urbanisme.prescription_surf;4;txt;text;False;
+urbanisme.prescription_surf;5;typepsc;text;False;Type de prescription (nomenclature CNIG)
+urbanisme.prescription_surf;6;stypepsc;text;False;
+urbanisme.prescription_surf;7;nomfic;text;False;
+urbanisme.prescription_surf;8;urlfic;text;False;
+urbanisme.prescription_surf;9;datvalid;text;False;
+urbanisme.prescription_surf;10;gpu_doc_id;text;False;
+urbanisme.prescription_surf;11;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+urbanisme.prescription_surf;12;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.prescription_surf;13;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+urbanisme.prescription_surf;14;gid;integer;True;Identifiant technique
+urbanisme.zone_urba;1;partition;text;False;
+urbanisme.zone_urba;2;idurba;text;False;Identifiant du document d'urbanisme (standard CNIG)
+urbanisme.zone_urba;3;libelle;text;False;Libellé court
+urbanisme.zone_urba;4;libelong;text;False;Libellé long
+urbanisme.zone_urba;5;typezone;text;False;Type de zone CNIG : U, AUc, AUs, A, N
+urbanisme.zone_urba;6;destdomi;text;False;
+urbanisme.zone_urba;7;nomfic;text;False;
+urbanisme.zone_urba;8;urlfic;text;False;
+urbanisme.zone_urba;9;datvalid;text;False;
+urbanisme.zone_urba;10;gpu_doc_id;text;False;
+urbanisme.zone_urba;11;code_insee;text;False;Code officiel géographique de la commune (INSEE)
+urbanisme.zone_urba;12;url_reglement;text;False;Lien vers le règlement écrit (pièce déposée au GPU)
+urbanisme.zone_urba;13;geom;geometry;False;Géométrie (Lambert-93, EPSG:2154)
+urbanisme.zone_urba;14;gid;integer;True;Identifiant technique

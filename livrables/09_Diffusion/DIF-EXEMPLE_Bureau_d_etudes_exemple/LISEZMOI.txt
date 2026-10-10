@@ -1,0 +1,7 @@
+Diffusion DIF-EXEMPLE - Bureau d'études (exemple)
+Objet : Étude de requalification de la traversée de Châtenois
+Périmètre : Châtenois
+
+donnees.gpkg : une couche par jeu (Lambert-93), à ouvrir dans QGIS ou ArcGIS Pro.
+metadonnees/ : fiches ISO 19139 de chaque jeu.
+Bordereau_de_diffusion.pdf : liste des jeux, licences et conditions de réutilisation.
