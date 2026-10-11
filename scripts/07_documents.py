@@ -416,6 +416,10 @@ def note_architecture(c):
         ["Patrimoine arboré", "Continue", "Saisie QGIS / QField ; aucun rechargement"],
     ], [4.5 * cm, 4 * cm, 8.5 * cm])]
     H += puces([
+        "<b>Mise à jour sans perte</b> : sur une base existante, chaque référentiel est rechargé en place "
+        "(table de transit, puis remplacement en une transaction) ; les communes et documents d'urbanisme, "
+        "auxquels d'autres données sont rattachées, sont mis à jour ligne à ligne. Arbres, interventions et "
+        "journal ne sont jamais touchés. La reconstruction complète se demande explicitement (--reconstruire).",
         "<b>Sauvegarde</b> : pg_dump quotidien au format personnalisé (restauration table par table avec pg_restore).",
         "<b>Passage en production</b> : serveur PostgreSQL de la collectivité, comptes nominatifs, "
         "Lizmap sur QGIS Server pour la carte interne avec authentification, QFieldCloud ou dossier "
@@ -553,10 +557,11 @@ def fiches_tutoriel():
           Spacer(1, 6), P("Préparer la tournée (au bureau)", "h2")]
     H += etapes(["Installer l'application QField (gratuite) sur la tablette, et l'extension QFieldSync "
                  "dans QGIS (Extensions › Installer/Gérer les extensions).",
-                 "Ouvrir <i>sig_ccst_postgis.qgz</i>, puis QFieldSync › « Préparer le projet pour QField » "
+                 "Ouvrir <i>qgis/inventaire_arbres_postgis.qgz</i> (le projet terrain connecté à la base), "
+                 "puis QFieldSync › « Préparer le projet pour QField » "
                  "(Package for QField) et choisir un dossier. Le projet est déjà réglé : arbres et interventions "
                  "en modification hors connexion, communes, parcelles, bâti, adresses, voirie et listes copiés "
-                 "en lecture, fonds IGN chargés en ligne, autres couches retirées.",
+                 "en lecture, fonds IGN chargés en ligne.",
                  "Copier ce dossier sur la tablette (câble), ou l'envoyer sur QFieldCloud.",
                  "Sans accès au serveur : copier plutôt le dossier <i>qfield/</i> livré (projet "
                  "inventaire_arbres.qgz et son GeoPackage), qui fonctionne seul.",
@@ -657,8 +662,10 @@ def bordereau_livraison():
         ("09_Diffusion", "Exemple d'extraction pour un tiers, avec bordereau de diffusion"),
     ]:
         lignes.append([chemin, contenu, taille(L / chemin)])
-    lignes.append(["../qgis/sig_ccst_postgis.qgz", "Projet de production connecté à PostGIS (service sig_ccst)",
+    lignes.append(["../qgis/sig_ccst_postgis.qgz", "Projet de consultation connecté à PostGIS (service sig_ccst)",
                    taille(config.QGIS_DIR / "sig_ccst_postgis.qgz")])
+    lignes.append(["../qgis/inventaire_arbres_postgis.qgz", "Projet de saisie terrain connecté à PostGIS, "
+                   "à préparer pour la tablette avec QFieldSync", taille(config.QGIS_DIR / "inventaire_arbres_postgis.qgz")])
     lignes.append(["../docs", "Carte web (GitHub Pages)", taille(config.DOCS)])
     H = [P("Bordereau de livraison", "h1"),
          P(f"Socle SIG intercommunal open source · {config.EPCI_NOM} · version {pdf.VERSION} · {pdf.AUJOURDHUI}"),

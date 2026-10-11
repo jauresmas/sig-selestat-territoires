@@ -8,9 +8,16 @@
   5. fiche parcelle, contrôles, diffusion, indicateurs         (sql/04 à 07)
   6. catalogue des données, puis sauvegarde (pg_dump)
 
+Si la base existe déjà, elle n'est PAS recréée : les référentiels sont mis à
+jour en place et les données métier (arbres, interventions, journal) sont
+conservées. La reconstruction complète, qui efface tout, se demande
+explicitement : python scripts/01_base_postgis.py --reconstruire
+(ou python scripts/run_all.py --reconstruire).
+
 En production, les étapes 2 à 6 s'appliquent telles quelles au serveur
 PostgreSQL de la collectivité : seule l'étape 1 est propre à la démonstration.
 """
+import argparse
 import subprocess
 import time
 
@@ -102,6 +109,92 @@ def charger_referentiels():
         log(f"  -> {table} : {len(gdf)} objets")
 
     valeurs = ",".join(f"('{t}', {n}, '{s}', 'scripts/01_base_postgis.py')" for t, n, s in journal)
+    psql("INSERT INTO metadonnees.journal_integration (table_nom, nb_objets, source, script) "
+         f"VALUES {valeurs}", utilisateur=config.PG_OWNER)
+    psql(fichier=config.SQL / "02_referentiels.sql", utilisateur=config.PG_OWNER)
+
+
+# --- 3 bis. Mise à jour des référentiels d'une base existante ---------------------------
+# Tables référencées par des clés étrangères (les arbres sont rattachés aux communes) :
+# mises à jour ligne à ligne, jamais vidées.
+PAR_CLE = {"ref_admin.commune", "urbanisme.doc_urba"}
+
+
+def base_existante():
+    existe = psql(f"SELECT count(*) FROM pg_database WHERE datname = '{config.PG_DB}'", base="postgres")
+    if existe != "1":
+        return False
+    return psql("SELECT to_regclass('espaces_verts.arbre') IS NOT NULL") == "t"
+
+
+def colonnes_cibles(table):
+    """Colonnes de la table cible avec leur type (hors identifiant auto-incrémenté)."""
+    lignes = psql(f"""SELECT a.attname || '|' || format_type(a.atttypid, a.atttypmod)
+                      FROM pg_attribute a
+                      WHERE a.attrelid = '{table}'::regclass AND a.attnum > 0
+                        AND NOT a.attisdropped AND a.attidentity = ''
+                      ORDER BY a.attnum""", utilisateur=config.PG_OWNER)
+    return dict(ligne.split("|", 1) for ligne in lignes.splitlines())
+
+
+def mettre_a_jour_referentiels():
+    """Recharge chaque référentiel en place, sans toucher aux données métier.
+    Les nouvelles données passent par le schéma import, puis remplacent le
+    contenu de la table dans une transaction (structure, droits et vues conservés)."""
+    from sqlalchemy import create_engine
+    moteur = create_engine(f"postgresql+psycopg2://{config.PG_OWNER}@{config.PG_HOST}:"
+                           f"{config.PG_PORT}/{config.PG_DB}")
+    presentes = couches()
+    journal, suppressions, transits = [], [], []
+    for fiche in catalogue.CATALOGUE:
+        if fiche["couche"] not in presentes:
+            continue
+        table = f"{fiche['schema']}.{fiche['table']}"
+        if psql(f"SELECT to_regclass('{table}') IS NOT NULL", utilisateur=config.PG_OWNER) != "t":
+            log(f"  {table} absente de la base : relancer avec --reconstruire")
+            continue
+        transit = f"maj_{fiche['table']}"
+        transits.append(transit)
+        gdf = lire(fiche["couche"])
+        gdf.columns = [c.lower() for c in gdf.columns]
+        if isinstance(gdf, gpd.GeoDataFrame) and gdf.geometry.notna().any():
+            en_multi(gdf).rename_geometry("geom").to_postgis(
+                transit, moteur, schema="import", if_exists="replace", index=False, chunksize=5000)
+        else:
+            pd.DataFrame(gdf.drop(columns="geometry", errors="ignore")).to_sql(
+                transit, moteur, schema="import", if_exists="replace", index=False)
+        cibles = colonnes_cibles(table)
+        communes = [c for c in cibles if c in set(gdf.columns) | {"geom"}]
+        cols = ", ".join(communes)
+        select = ", ".join(f"{c}::{cibles[c]}" for c in communes)
+        if table in PAR_CLE:
+            cle = fiche["cle"]
+            maj = ", ".join(f"{c} = excluded.{c}" for c in communes if c != cle)
+            sql = (f"INSERT INTO {table} ({cols}) SELECT {select} FROM import.{transit} "
+                   f"ON CONFLICT ({cle}) DO UPDATE SET {maj};")
+            suppressions.append((table, f"DELETE FROM {table} t WHERE NOT EXISTS "
+                                        f"(SELECT 1 FROM import.{transit} s WHERE s.{cle} = t.{cle})"))
+        else:
+            sql = (f"TRUNCATE {table} RESTART IDENTITY; "
+                   f"INSERT INTO {table} ({cols}) SELECT {select} FROM import.{transit};")
+        psql(f"BEGIN; {sql} COMMIT;", utilisateur=config.PG_OWNER)
+        journal.append((table, len(gdf), fiche["source_url"]))
+        log(f"  -> {table} : {len(gdf)} objets (mis à jour)")
+
+    # objets disparus des tables à clé (une commune quittant l'EPCI, un document
+    # retiré du GPU) : supprimés seulement s'ils ne sont plus utilisés
+    for table, sql in suppressions:
+        try:
+            n = psql(f"WITH s AS ({sql} RETURNING 1) SELECT count(*) FROM s", utilisateur=config.PG_OWNER)
+            if n != "0":
+                log(f"  {table} : {n} objet(s) disparu(s) de la source, supprimé(s)")
+        except RuntimeError:
+            log(f"  {table} : objets disparus de la source mais encore utilisés, conservés")
+    if transits:
+        psql("DROP TABLE IF EXISTS " + ", ".join(f"import.{t}" for t in transits),
+             utilisateur=config.PG_OWNER)
+    valeurs = ",".join(f"('{t}', {n}, '{src}', 'scripts/01_base_postgis.py (mise à jour)')"
+                       for t, n, src in journal)
     psql("INSERT INTO metadonnees.journal_integration (table_nom, nb_objets, source, script) "
          f"VALUES {valeurs}", utilisateur=config.PG_OWNER)
     psql(fichier=config.SQL / "02_referentiels.sql", utilisateur=config.PG_OWNER)
@@ -422,12 +515,20 @@ def sauvegarder():
     log(f"  -> {dossier.relative_to(config.ROOT)}")
 
 
-def main():
+def main(reconstruire=False):
     instance()
-    base_neuve()
-    log("Chargement des référentiels")
-    charger_referentiels()
-    espaces_verts()
+    if not reconstruire and base_existante():
+        log(f"Base {config.PG_DB} existante : mise à jour des référentiels, "
+            "arbres et interventions conservés")
+        psql(fichier=config.SQL / "01_structure.sql")
+        mettre_a_jour_referentiels()
+    else:
+        if reconstruire:
+            log("Reconstruction complète demandée : la base est effacée puis recréée")
+        base_neuve()
+        log("Chargement des référentiels")
+        charger_referentiels()
+        espaces_verts()
     for f in ("04_urbanisme.sql", "05_controles.sql", "06_diffusion.sql", "07_indicateurs.sql"):
         log(f"Exécution de sql/{f}")
         psql(fichier=config.SQL / f, utilisateur=config.PG_OWNER)
@@ -438,4 +539,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--reconstruire", action="store_true",
+                    help="efface la base et la recrée (arbres saisis perdus)")
+    main(reconstruire=ap.parse_args().reconstruire)

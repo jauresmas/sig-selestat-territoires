@@ -6,7 +6,10 @@ Usage :
 
 Mise à jour : les flux (WFS IGN, GPU, BAN, INPN) renvoient toujours le dernier
 millésime publié. Relancer la chaîne suffit pour rafraîchir les référentiels,
-la base, les contrôles, les métadonnées, la carte web et les cartes.
+les contrôles, les métadonnées, la carte web et les cartes. Les arbres et
+interventions saisis dans la base sont conservés.
+
+    python scripts/run_all.py --reconstruire   # repart de zéro : efface la base
 L'étape 6 s'exécute avec le Python de QGIS (PyQGIS), lancé automatiquement.
 """
 import argparse
@@ -43,6 +46,8 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--depuis", type=int, default=0, help="numéro de la première étape")
     parser.add_argument("--jusqua", type=int, default=len(ETAPES) - 1, help="numéro de la dernière étape")
+    parser.add_argument("--reconstruire", action="store_true",
+                        help="efface et recrée la base (les arbres saisis sont perdus)")
     args = parser.parse_args()
     debut = time.time()
     log(f"SIG intercommunal - {config.EPCI_NOM} (SIREN {config.EPCI_SIREN})")
@@ -54,6 +59,8 @@ def main():
         if module == "06_projet_qgis":
             lancer_pyqgis(module)
             lancer_pyqgis("06b_captures_qgis")
+        elif module == "01_base_postgis":
+            importlib.import_module(module).main(reconstruire=args.reconstruire)
         else:
             importlib.import_module(module).main()
         log(f"=== Étape {i} terminée en {time.time() - t:.0f} s")

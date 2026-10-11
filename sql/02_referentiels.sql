@@ -1,26 +1,32 @@
 -- =============================================================================
 -- Socle SIG intercommunal - 02. Intégrité des référentiels
--- Exécuté après chaque chargement des référentiels (scripts/01_base_postgis.py).
--- Clés primaires et index spatiaux sont posés par le script de chargement ;
--- ce fichier ajoute les relations entre tables et les index de recherche.
+-- Exécuté après chaque chargement ou mise à jour des référentiels
+-- (scripts/01_base_postgis.py). Rejouable : chaque contrainte est retirée puis
+-- reposée. Clés primaires et index spatiaux sont posés par le script de
+-- chargement ; ce fichier ajoute les relations, les nomenclatures et les index.
 -- =============================================================================
 
 -- Relations : chaque objet est rattaché à une commune du territoire
 ALTER TABLE ref_cadastre.parcelle
+    DROP CONSTRAINT IF EXISTS parcelle_commune_fk,
     ADD CONSTRAINT parcelle_commune_fk FOREIGN KEY (code_insee)
     REFERENCES ref_admin.commune (code_insee);
 ALTER TABLE ref_adresse.adresse
+    DROP CONSTRAINT IF EXISTS adresse_commune_fk,
     ADD CONSTRAINT adresse_commune_fk FOREIGN KEY (code_insee)
     REFERENCES ref_admin.commune (code_insee);
 ALTER TABLE urbanisme.doc_urba
+    DROP CONSTRAINT IF EXISTS doc_urba_commune_fk,
     ADD CONSTRAINT doc_urba_commune_fk FOREIGN KEY (code_insee)
     REFERENCES ref_admin.commune (code_insee);
 ALTER TABLE urbanisme.zone_urba
+    DROP CONSTRAINT IF EXISTS zone_urba_doc_fk,
     ADD CONSTRAINT zone_urba_doc_fk FOREIGN KEY (code_insee)
     REFERENCES urbanisme.doc_urba (code_insee);
 
 -- Contrôles de domaine sur les référentiels (standard CNIG)
 ALTER TABLE urbanisme.zone_urba
+    DROP CONSTRAINT IF EXISTS zone_urba_typezone_ck,
     ADD CONSTRAINT zone_urba_typezone_ck
     CHECK (typezone IN ('U', 'AUc', 'AUs', 'A', 'N', 'Nh', 'Ah'));
 
@@ -55,7 +61,7 @@ COMMENT ON FUNCTION ref_adresse.rechercher(text, int) IS
 
 -- Nomenclature nationale des servitudes d'utilité publique (catégories présentes
 -- ou fréquentes en Alsace) : donne un libellé lisible aux codes du GPU
-DROP TABLE IF EXISTS servitudes.categorie_sup;
+DROP TABLE IF EXISTS servitudes.categorie_sup CASCADE;  -- recrée aussi les vues v_*_s plus bas
 CREATE TABLE servitudes.categorie_sup (
     code    text PRIMARY KEY,
     libelle text NOT NULL,

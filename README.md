@@ -95,7 +95,7 @@ Les saisies reviennent dans la base de deux façons :
 
 | Projet emporté sur le terrain | Retour vers PostGIS |
 |---|---|
-| Préparé par l'extension QFieldSync depuis `qgis/sig_ccst_postgis.qgz` (couches déjà réglées : arbres et interventions hors connexion, repères copiés, fonds IGN en ligne) | « Synchroniser depuis QField » dans QGIS, ou QFieldCloud |
+| Préparé par l'extension QFieldSync depuis `qgis/inventaire_arbres_postgis.qgz`, le même projet terrain connecté directement à PostGIS (couches déjà réglées : arbres et interventions hors connexion, repères copiés, fonds IGN en ligne) | « Synchroniser depuis QField » dans QGIS, ou QFieldCloud |
 | Dossier `qfield/` livré, autonome sur GeoPackage | [`import_terrain.py`](scripts/import_terrain.py) : nouveaux arbres et interventions ajoutés, modifications appliquées (la plus récente l'emporte), photos copiées, refus listés, rien de supprimé |
 
 ```bash
@@ -147,7 +147,7 @@ python scripts/extraction.py --demandeur "Bureau d'études (exemple)" --objet "�
 | `08_Tableaux/` | Contrôles qualité détaillés et indicateurs communaux (Excel) |
 | `09_Diffusion/` | Exemple d'extraction pour un tiers, avec bordereau de diffusion |
 
-Le projet de production connecté à PostGIS est dans [`qgis/sig_ccst_postgis.qgz`](qgis/).
+Les projets de production connectés à PostGIS sont dans [`qgis/`](qgis/) : `sig_ccst_postgis.qgz` (consultation) et `inventaire_arbres_postgis.qgz` (saisie terrain, mêmes couches et formulaires que la version QField autonome).
 
 ## Reproduire
 
@@ -161,7 +161,15 @@ playwright install chromium        # captures de la carte web
 python scripts/run_all.py          # une dizaine de minutes
 ```
 
-La chaîne crée une instance PostgreSQL de démonstration (`data/pgdata`, port 5433) pour ne pas toucher à une instance existante. Pour **mettre à jour**, il suffit de relancer `run_all.py` : les flux renvoient toujours le dernier millésime publié. Pour **transposer** à un autre EPCI, changez `EPCI_SIREN`, `EPCI_NOM` et `DEPARTEMENT` dans `config.py`.
+La chaîne crée une instance PostgreSQL de démonstration (`data/pgdata`, port 5433) pour ne pas toucher à une instance existante. Après un redémarrage du PC, [`demarrer_base.bat`](demarrer_base.bat) la relance.
+
+Pour **mettre à jour**, il suffit de relancer `run_all.py` : les flux renvoient toujours le dernier millésime publié. Si la base existe déjà, elle n'est pas recréée : les référentiels (cadastre, adresses, BD TOPO, PLU, servitudes, zonages naturels) sont rechargés en place, et **les arbres, interventions et le journal saisis dans QGIS ou QField sont conservés**. Contraintes, droits, contrôles et indicateurs sont recalculés. Pour repartir de zéro (la base est effacée, saisies comprises) :
+
+```bash
+python scripts/run_all.py --reconstruire
+```
+
+Pour **transposer** à un autre EPCI, changez `EPCI_SIREN`, `EPCI_NOM` et `DEPARTEMENT` dans `config.py`, puis lancez une reconstruction.
 
 ## Sources et licences
 

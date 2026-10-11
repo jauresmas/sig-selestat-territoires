@@ -7,7 +7,8 @@ Produit :
   - qgis/sig_ccst_postgis.qgz : projet de production connecté à PostGIS par un
     service (pg_service.conf), sans aucun mot de passe dans le projet
   - livrables/03_Projets_QGIS/sig_ccst.qgz : le même projet sur GeoPackage
-  - livrables/03_Projets_QGIS/qfield/inventaire_arbres.qgz : saisie terrain (QField)
+  - livrables/03_Projets_QGIS/qfield/inventaire_arbres.qgz : saisie terrain (QField), autonome
+  - qgis/inventaire_arbres_postgis.qgz : le même projet terrain connecté à PostGIS
   - livrables/06_Cartes : planches A3 (PDF et PNG)
   - livrables/07_Atlas_communal : atlas A4, une page par commune
 """
@@ -1130,15 +1131,16 @@ def exporter(projet):
 # =============================================================================
 # Projet QField (saisie terrain)
 # =============================================================================
-def projet_qfield():
-    chemin = PROJETS / "qfield" / "inventaire_arbres.qgz"
-    log(f"Projet QField {chemin.name}")
+def projet_qfield(src, chemin, titre):
+    """Projet de saisie terrain, en deux versions identiques (couches, symbologie,
+    formulaires) : sur GeoPackage autonome, ou connecté à PostGIS (à préparer pour
+    la tablette avec QFieldSync, qui renvoie ensuite les saisies dans la base)."""
+    log(f"Projet QField {chemin.name} ({src.mode})")
     projet = QgsProject.instance()
     projet.clear()
     projet.setCrs(CRS)
-    projet.setTitle("Inventaire du patrimoine arboré - saisie terrain")
+    projet.setTitle(titre)
     projet.writeEntry("Paths", "/Absolute", False)
-    src = Source("gpkg", GPKG_QFIELD)
     racine = projet.layerTreeRoot()
     g_saisie = racine.addGroup("Saisie")
     g_fond = racine.addGroup("Repères")
@@ -1163,7 +1165,6 @@ def projet_qfield():
     com.setRenderer(QgsRuleBasedRenderer(remplissage("transparent", "#ffffff", 0.8, "dash")))
     for lyr in (adr, parc, bat, route, com):
         lyr.setReadOnly(True)
-        lyr.setCustomProperty("QFieldSync/action", "copy")
     titres_listes = {"liste_essence": "Listes - essences", "liste_etat_sanitaire": "Listes - états sanitaires",
                      "liste_stade_dev": "Listes - stades", "liste_implantation": "Listes - implantations",
                      "liste_risque": "Listes - risques", "liste_type_intervention": "Listes - types d'intervention"}
@@ -1171,11 +1172,16 @@ def projet_qfield():
     for nom, t in titres_listes.items():
         listes[nom] = ajouter(projet, g_listes, src.couche(nom, t), False)
         listes[nom].setReadOnly(True)
-    for lyr in (arbre, inter):
-        lyr.setCustomProperty("QFieldSync/action", "offline")
     ortho = ajouter(projet, g_img, xyz("ORTHOIMAGERY.ORTHOPHOTOS", "Photographies aériennes (IGN)", "image/jpeg"), True)
-    ajouter(projet, g_img, xyz("GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2", "Plan IGN"), False)
+    plan = ajouter(projet, g_img, xyz("GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2", "Plan IGN"), False)
     ortho.setOpacity(0.9)
+    # QFieldSync : saisies hors connexion puis resynchronisées, repères et listes
+    # copiés, fonds IGN chargés en ligne
+    for lyr, action in [(arbre, "offline"), (inter, "offline"), (adr, "copy"), (parc, "copy"),
+                        (bat, "copy"), (route, "copy"), (com, "copy"), (ortho, "no_action"),
+                        (plan, "no_action")] + [(l, "copy") for l in listes.values()]:
+        lyr.setCustomProperty("QFieldSync/action", action)
+        lyr.setCustomProperty("QFieldSync/cloud_action", action)
     configurer_saisie(projet, arbre, inter, listes, com)
     g_listes.setExpanded(False)
     # accrochage sur les arbres existants pour éviter les doublons
@@ -1200,12 +1206,15 @@ def main():
     if os.environ.get("SANS_EXPORT") != "1":
         log("Export des planches et de l'atlas")
         exporter(projet)
+    projet_qfield(Source("gpkg", GPKG_QFIELD), PROJETS / "qfield" / "inventaire_arbres.qgz",
+                  "Inventaire du patrimoine arboré - saisie terrain")
     try:
         projet_consultation(Source("postgis"), config.QGIS_DIR / "sig_ccst_postgis.qgz",
                             "SIG intercommunal - CC de Sélestat (PostGIS)")
-    except RuntimeError as err:  # instance PostgreSQL arrêtée : le projet PostGIS est sauté
-        log(f"Projet PostGIS non généré : {err}")
-    projet_qfield()
+        projet_qfield(Source("postgis"), config.QGIS_DIR / "inventaire_arbres_postgis.qgz",
+                      "Inventaire du patrimoine arboré - saisie terrain (PostGIS)")
+    except RuntimeError as err:  # instance PostgreSQL arrêtée : les projets PostGIS sont sautés
+        log(f"Projets PostGIS non générés : {err}")
     log("Terminé")
 
 

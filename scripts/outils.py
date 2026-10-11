@@ -134,7 +134,7 @@ def psql(sql=None, fichier=None, base=None, utilisateur=None, variables=None, ca
         raise RuntimeError(f"psql a échoué ({fichier or sql[:80]}) :\n{res.stderr}")
     if res.stderr.strip():
         for ligne in res.stderr.strip().splitlines():
-            if "NOTICE" not in ligne:
+            if not any(m in ligne for m in ("NOTICE", "DETAIL", "drop cascades")):
                 log(f"  psql : {ligne}")
     return res.stdout.strip() if capture or sql else None
 
