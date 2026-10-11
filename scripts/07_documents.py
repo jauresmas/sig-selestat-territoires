@@ -350,7 +350,13 @@ def note_architecture(c):
             "Dimensions, État sanitaire, Interventions, Traçabilité), avec des listes déroulantes, des "
             "contrôles de saisie (hauteur, circonférence, photo recommandée pour un arbre dépérissant) et "
             "des valeurs automatiques : identifiant, commune calculée hors connexion par expression, "
-            "précision GNSS, auteur. À la synchronisation, la base applique ses propres règles.")]
+            "précision GNSS, auteur. À la synchronisation, la base applique ses propres règles."),
+          P("Le retour des saisies se fait de deux façons. Depuis le projet PostGIS, l'extension QFieldSync "
+            "(ou QFieldCloud) prépare la copie hors connexion puis réécrit les modifications dans la base ; "
+            "chaque couche y est déjà réglée (arbres et interventions modifiables, repères copiés, fonds en "
+            "ligne). Pour le projet autonome sur GeoPackage, le script <i>import_terrain.py</i> compare les "
+            "arbres à la base par identifiant, applique la modification la plus récente, ajoute les "
+            "interventions, copie les photos et liste les refus, sans rien supprimer.")]
     if (IMG / "qgis_patrimoine_arbore.png").exists():
         H += [figure(IMG / "qgis_patrimoine_arbore.png", "Figure 2 - Thème « Patrimoine arboré » du projet "
                      "QGIS : état sanitaire (couleur), circonférence (taille), priorités (anneaux).", max_hauteur=10 * cm)]
@@ -545,10 +551,16 @@ def fiches_tutoriel():
           encadre("<b>Pour qui ?</b> Agents des espaces verts équipés d'une tablette ou d'un smartphone "
                   "(Android ou iOS). <b>Durée</b> : 2 minutes par arbre."),
           Spacer(1, 6), P("Préparer la tournée (au bureau)", "h2")]
-    H += etapes(["Installer l'application QField (gratuite).",
-                 "Copier le dossier <i>qfield/</i> (projet inventaire_arbres.qgz et son GeoPackage) sur "
-                 "l'appareil, ou le synchroniser par QFieldCloud.",
-                 "Ouvrir le projet : photo aérienne IGN en fond, arbres colorés selon leur état."])
+    H += etapes(["Installer l'application QField (gratuite) sur la tablette, et l'extension QFieldSync "
+                 "dans QGIS (Extensions › Installer/Gérer les extensions).",
+                 "Ouvrir <i>sig_ccst_postgis.qgz</i>, puis QFieldSync › « Préparer le projet pour QField » "
+                 "(Package for QField) et choisir un dossier. Le projet est déjà réglé : arbres et interventions "
+                 "en modification hors connexion, communes, parcelles, bâti, adresses, voirie et listes copiés "
+                 "en lecture, fonds IGN chargés en ligne, autres couches retirées.",
+                 "Copier ce dossier sur la tablette (câble), ou l'envoyer sur QFieldCloud.",
+                 "Sans accès au serveur : copier plutôt le dossier <i>qfield/</i> livré (projet "
+                 "inventaire_arbres.qgz et son GeoPackage), qui fonctionne seul.",
+                 "Ouvrir le projet dans QField : photo aérienne IGN en fond, arbres colorés selon leur état."])
     H += [P("Créer un arbre", "h2")]
     H += etapes(["Se placer au pied de l'arbre ; attendre une précision GNSS de quelques mètres.",
                  "Passer en mode saisie (crayon), choisir la couche Arbres, ajouter le point à la position GNSS.",
@@ -564,9 +576,21 @@ def fiches_tutoriel():
                 "Photo demandée (avertissement) pour un arbre dépérissant ou mort.",
                 "Un arbre hors du territoire est refusé à la synchronisation."])
     H += [P("Synchroniser (retour au bureau)", "h2"),
-          P("Avec QFieldCloud : bouton « Synchroniser ». Sans : récupérer le dossier et utiliser "
-            "l'extension QFieldSync de QGIS (« Synchroniser depuis QField »). La base applique alors ses "
-            "règles (numéro définitif, journal) et les arbres apparaissent dans tous les outils.")]
+          tableau([
+              ["Projet utilisé sur le terrain", "Retour des saisies vers la base PostGIS"],
+              ["Préparé par QFieldSync (PostGIS)", "QGIS › QFieldSync › « Synchroniser depuis QField », puis choisir "
+               "le dossier revenu de la tablette. Avec QFieldCloud : bouton « Synchroniser » dans QField."],
+              ["Dossier qfield/ livré (GeoPackage)", "Rapatrier le GeoPackage et le dossier DCIM, puis lancer le script "
+               "d'import, d'abord en simulation (voir ci-dessous)."],
+          ], [5.5 * cm, 11.5 * cm]),
+          Spacer(1, 6),
+          code("python scripts/import_terrain.py D:/retour/inventaire_arbres.gpkg --simulation\n"
+               "python scripts/import_terrain.py D:/retour/inventaire_arbres.gpkg"),
+          P("Le script compare chaque arbre à la base grâce à son identifiant : il ajoute les nouveaux arbres "
+            "et interventions, met à jour les arbres modifiés (la modification la plus récente l'emporte), "
+            "copie les photos et liste les refus (arbre hors du territoire, valeur incohérente). Rien n'est "
+            "supprimé. Dans tous les cas, la base applique ses règles (numéro définitif, commune, journal) "
+            "et les arbres apparaissent aussitôt dans QGIS et dans les contrôles qualité.")]
     if (IMG / "qgis_formulaire_arbre.png").exists():
         H += [figure(IMG / "qgis_formulaire_arbre.png", "Le formulaire de saisie, identique dans QGIS et QField : "
                      "onglet État sanitaire.", largeur=11 * cm)]

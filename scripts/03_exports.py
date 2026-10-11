@@ -7,6 +7,7 @@
   - Jeux open data : vues du schéma diffusion en GeoJSON et CSV
 """
 import shutil
+from decimal import Decimal
 
 import pandas as pd
 import pyogrio
@@ -97,6 +98,8 @@ def nettoyer(df):
                 df[c] = df[c].map(lambda v: "; ".join(v) if isinstance(v, (list, tuple)) else v)
             elif hasattr(echantillon.iloc[0], "hex"):  # uuid
                 df[c] = df[c].astype(str).where(df[c].notna())
+            elif isinstance(echantillon.iloc[0], Decimal):  # numeric -> réel (et non texte)
+                df[c] = df[c].astype(float)
     return df
 
 

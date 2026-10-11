@@ -91,6 +91,18 @@ Le modèle métier est conçu pour la saisie hors connexion. Chaque arbre a un i
 
 Le projet [QField](livrables/03_Projets_QGIS/qfield/) reprend les formulaires du bureau (onglets, listes déroulantes, contrôles, photo). La commune est calculée hors connexion par expression, la précision GNSS et l'auteur sont enregistrés automatiquement.
 
+Les saisies reviennent dans la base de deux façons :
+
+| Projet emporté sur le terrain | Retour vers PostGIS |
+|---|---|
+| Préparé par l'extension QFieldSync depuis `qgis/sig_ccst_postgis.qgz` (couches déjà réglées : arbres et interventions hors connexion, repères copiés, fonds IGN en ligne) | « Synchroniser depuis QField » dans QGIS, ou QFieldCloud |
+| Dossier `qfield/` livré, autonome sur GeoPackage | [`import_terrain.py`](scripts/import_terrain.py) : nouveaux arbres et interventions ajoutés, modifications appliquées (la plus récente l'emporte), photos copiées, refus listés, rien de supprimé |
+
+```bash
+python scripts/import_terrain.py D:/retour/inventaire_arbres.gpkg --simulation   # rapport sans rien écrire
+python scripts/import_terrain.py D:/retour/inventaire_arbres.gpkg
+```
+
 <p>
 <img src="docs/img/qgis_patrimoine_arbore.png" width="58%" alt="Thème Patrimoine arboré du projet QGIS">
 <img src="docs/img/qgis_formulaire_interventions.png" width="40%" alt="Formulaire de saisie d'un arbre, onglet Interventions, identique dans QGIS et QField">

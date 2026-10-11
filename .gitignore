@@ -7,6 +7,9 @@ __pycache__/
 # (reconstruites par scripts/run_all.py)
 /data/
 
+# Photos de terrain importées (données internes, hors dépôt public)
+/qgis/DCIM/
+
 # Fichiers temporaires
 *.part
 *.aux.xml

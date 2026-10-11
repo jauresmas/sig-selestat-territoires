@@ -740,6 +740,7 @@ def projet_consultation(source, chemin, titre):
     # Les listes et la commune servent aux expressions des formulaires
     L["commune"].setName("Communes")
     configurer_saisie(projet, L["arbre"], L["intervention"], listes, L["commune"])
+    preparer_qfieldsync(projet, L, listes)
     themes(projet, L)
     mises_en_page(projet, L)
     emprise = L["epci"].extent()
@@ -750,6 +751,28 @@ def projet_consultation(source, chemin, titre):
     if not projet.write(str(chemin)):
         raise RuntimeError(f"Écriture impossible : {chemin}")
     return projet, L
+
+
+# =============================================================================
+# Préparation pour QFieldSync (projet PostGIS -> tablette -> base)
+# =============================================================================
+QFIELD_HORS_CONNEXION = ["arbre", "intervention"]      # saisis sur le terrain, resynchronisés
+QFIELD_COPIE = ["commune", "parcelle", "batiment", "adresse", "route"]  # repères, en lecture
+QFIELD_EN_LIGNE = ["plan", "plan_gris", "ortho"]       # fonds IGN chargés sur le réseau
+
+
+def preparer_qfieldsync(projet, L, listes):
+    """Indique à l'extension QFieldSync ce qu'elle fait de chaque couche quand elle
+    prépare le projet pour la tablette : modification hors connexion (puis
+    « Synchroniser depuis QField » vers PostGIS), simple copie, ou retrait."""
+    actions = {L[k].id(): "offline" for k in QFIELD_HORS_CONNEXION}
+    actions.update({L[k].id(): "copy" for k in QFIELD_COPIE})
+    actions.update({lyr.id(): "copy" for lyr in listes.values()})
+    actions.update({L[k].id(): "no_action" for k in QFIELD_EN_LIGNE})
+    for lyr in projet.mapLayers().values():
+        action = actions.get(lyr.id(), "remove")
+        lyr.setCustomProperty("QFieldSync/action", action)
+        lyr.setCustomProperty("QFieldSync/cloud_action", action)
 
 
 # =============================================================================
